@@ -1,8 +1,13 @@
-﻿namespace Mesenger.Api.ViewModels
+﻿namespace Messanger.Api.ViewModels
 {
     public class UserViewModel
     {
-        public string OutputName { get; set; }
-        public string Email { get; set; }
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public string OutputName { get; set; } = string.Empty;
+
+        public string Email { get; set; } 
     }
 }
