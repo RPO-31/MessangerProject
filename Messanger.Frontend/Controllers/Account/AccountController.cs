@@ -27,6 +27,8 @@ namespace Messanger.Frontend.Controllers.Account
             if (!Regex.IsMatch(email, EmailRegex))
                 return NotFound();
 
+            
+
 
 
             return Redirect("login");
