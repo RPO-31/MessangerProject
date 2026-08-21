@@ -24,9 +24,6 @@ namespace Messanger.Api.DTO
                 result.Add(UserToViewModel(user)); 
             }
             return result;
-             
-
         }
     }
-}
-
+} 

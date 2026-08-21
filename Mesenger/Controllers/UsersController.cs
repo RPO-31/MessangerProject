@@ -2,6 +2,7 @@
 using Messanger.Api.ViewModels;
 using Messanger.DataAccess.Models;
 using Messenger.Repository.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace Messanger.Api.Controllers
             _SearchService = SearchService;
         }
 
+        [Authorize]
         [HttpGet] 
         public async Task<List<UserViewModel>> SearchUsers([FromQuery]string search)
         {

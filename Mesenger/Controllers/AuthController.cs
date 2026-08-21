@@ -24,12 +24,15 @@ namespace Messanger.Api.Controllers
             _LoginService = LoginService;
             _SearchUsersService = SearchUsersService;
         }
-
+        
+        [Authorize]
         [HttpGet("Users")]
         public List<User> GetUsers()
         {
             return UserRepository.Users2;
         }
+
+        [AllowAnonymous]
         [HttpPost("register")]
         public EResultCode RegValid([FromQuery]string Name, [FromQuery] string OutputName, [FromQuery] string Email, [FromQuery] string Password)
         {
@@ -57,6 +60,7 @@ namespace Messanger.Api.Controllers
                     break;
             }*/
         }
+        
         [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult LogValidation([FromQuery] string Password, [FromQuery] string NameOrEmail)
@@ -77,6 +81,8 @@ namespace Messanger.Api.Controllers
                     break;
             }
         }
+
+        [Authorize]
         [HttpGet("me")] 
         public IActionResult IsAuthorized()
         {
@@ -85,6 +91,7 @@ namespace Messanger.Api.Controllers
                 return Ok(_SearchUsersService.SearchUserByIdAsync(Convert.ToInt32(id)).Result);
             return NotFound();
         }
+        [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {

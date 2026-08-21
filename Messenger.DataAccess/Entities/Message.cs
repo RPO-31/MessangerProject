@@ -18,7 +18,7 @@ namespace Messanger.DataAccess.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; } = false; 
 
     }
 }
