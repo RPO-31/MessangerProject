@@ -1,4 +1,5 @@
-﻿using Messanger.Api.Enums;
+﻿using Mesenger.Api.DTO.RequestClasses;
+using Messanger.Api.Enums;
 using Messanger.Api.Services.Interfaces;
 using Messanger.DataAccess.Models;
 using Messenger.Repository.Interfaces;
@@ -17,35 +18,35 @@ namespace Messanger.Api.Services
         {
             _UserRepository = userRepository;
         }
-        public async Task<EResultCode> RegValidation(string name = null, string outputName = null, string password = null, string email = null)
+        public async Task<EResultCode> RegValidation(RegisterRequest RegRequest)
         {
             var users = await _UserRepository.GetAsync();
-            if (name == null || outputName == null || password == null || email == null)
+            if (string.IsNullOrWhiteSpace(RegRequest.Name) || string.IsNullOrWhiteSpace(RegRequest.OutputName) || string.IsNullOrWhiteSpace(RegRequest.Password) || string.IsNullOrWhiteSpace(RegRequest.Email))
                 return EResultCode.SomeFieldsEmpty;
 
-            if(users.Any(u => u.Name == name || u.OutputName == outputName))
+            if(users.Any(u => u.Name == RegRequest.Name || u.OutputName == RegRequest.OutputName))
             {
                 return EResultCode.Invalid_NameOROutputName;
             }
 
-            if (Regex.IsMatch(password, PasswordRegex))
+            if (Regex.IsMatch(RegRequest.Password, PasswordRegex))
                 return EResultCode.Invalid_Password;
 
-            if (Regex.IsMatch(email, EmailRegex))
+            if (Regex.IsMatch(RegRequest.Email, EmailRegex))
                 return EResultCode.Invalid_Email;
 
-            var result = await AddUserToDb(name, outputName, password, email);
+            var result = await AddUserToDb(RegRequest);
             
             return result;
         }
 
-        private async Task<EResultCode> AddUserToDb(string name, string outputName, string password, string email)
+        private async Task<EResultCode> AddUserToDb(RegisterRequest RegRequest)
         {
             try 
             {  
                 var passwordHasher = new PasswordHasher<User>();
-                User NewUser = new User() { Id = 2, Name = name, OutputName = outputName, Email = email };
-                NewUser.Password = passwordHasher.HashPassword(NewUser, password);
+                User NewUser = new User() { Id = 2, Name = RegRequest.Name, OutputName = RegRequest.OutputName, Email = RegRequest.Email };
+                NewUser.Password = passwordHasher.HashPassword(NewUser, RegRequest.Password);
                 UserRepository.Users2.Add(NewUser);
                 await _UserRepository.AddAsync(NewUser); 
                 await _UserRepository.SaveChangesAsync();

@@ -1,9 +1,10 @@
-﻿using Messanger.Api.Enums;
+﻿using Mesenger.Api.DTO.RequestClasses;
+using Messanger.Api.Enums;
 
 namespace Messanger.Api.Services.Interfaces
 {
     public interface IRegisterService
     { 
-        Task<EResultCode> RegValidation(string Name, string OutputName, string password, string email);  
+        Task<EResultCode> RegValidation(RegisterRequest RegRequest);  
     }
 }

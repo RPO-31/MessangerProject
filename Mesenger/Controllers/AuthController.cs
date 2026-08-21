@@ -2,11 +2,9 @@
 using Messanger.DataAccess.Models;
 using Messenger.Repository.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
-using Messanger.Api.Services.Interfaces;
-using Messanger.Api.ViewModels;
+using Microsoft.AspNetCore.Mvc; 
+using Messanger.Api.Services.Interfaces; 
+using Mesenger.Api.DTO.RequestClasses;
 
 namespace Messanger.Api.Controllers
 {
@@ -34,17 +32,16 @@ namespace Messanger.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public EResultCode RegValid([FromQuery]string Name, [FromQuery] string OutputName, [FromQuery] string Email, [FromQuery] string Password)
+        public IActionResult RegValid(RegisterRequest RegRequest)
         {
-            var result = _RegisterService.RegValidation(Name, OutputName, Password, Email).Result;
-            return result;
-            /*switch (result)
+            var result = _RegisterService.RegValidation(RegRequest).Result;
+            switch (result)
             {
                 case EResultCode.Success:
                     return Ok();
                     break;
                 case EResultCode.Invalid_NameOROutputName:
-                    return NoContent();
+                    return BadRequest("неправильно введено Имя или отоб. Имя");
                     break;
                 case EResultCode.Invalid_Password:
                     return NoContent();
@@ -58,7 +55,9 @@ namespace Messanger.Api.Controllers
                 default:
                     return NoContent();
                     break;
-            }*/
+            }
+            
+            /*return result;[FromQuery]string Name, [FromQuery] string OutputName, [FromQuery] string Email, [FromQuery] string Password*/
         }
         
         [HttpPost("login")]

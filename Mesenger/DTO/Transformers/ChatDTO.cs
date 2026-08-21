@@ -1,7 +1,7 @@
 ﻿using Messanger.Api.ViewModels;
 using Messanger.DataAccess.Models;
 
-namespace Mesenger.Api.DTO
+namespace Mesenger.Api.DTO.Transformers
 {
     public static class ChatDTO
     {
