@@ -1,5 +1,64 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model LogRequest
+ 
 @{
+    ViewData["Title"] = "Login";
 }
+
+
+<div class="text-center">
+    <form method="post" onsubmit="SendData(event)">
+        <div class="form-group">
+            <label asp-for="loginOrEmail"></label>
+            <input asp-for="loginOrEmail" class="form-control" />
+            <span asp-validation-for="loginOrEmail" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="password"></label>
+            <input asp-for="password" class="form-control" />
+            <span asp-validation-for="password" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+	</form>
+    <div id="error-alert" class="alert alert-danger" style="display:none;"></div>
+</div>
+
+    
+
+<script>
+
+    async function SendData(e)
+    {
+        e.preventDefault();
+        let errorAlert = document.getElementById("error-alert");
+        errorAlert.style.display = "none"; 
+
+        const data =
+        {
+          nameOrEmail: document.getElementById("loginOrEmail").value, 
+          password: document.getElementById("password").value 
+        };
+
+       try {
+         const res = await fetch("https://localhost:5030/auth/login", {
+            method: "POST",
+            credentials: "include", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+          if (res.status === 201 || res.status === 200) { 
+              window.location.href = "/Chats";
+          } else {
+              const errData = await res.json();
+              errorAlert.innerText = errData.message || "Ошибка входа.";
+              errorAlert.style.display = "block";
+          }
+      } catch (error) {
+          errorAlert.innerText = "Не удалось связаться с сервером.";
+          errorAlert.style.display = "block";
+          console.error("Ошибка:", error); 
+      }
+    }
+</script> 

@@ -1,0 +1,44 @@
+﻿@model List<ChatViewModel>
+@{
+}
+
+<div class="container text-center">
+    <div class="row align-items-start">
+        <div class="row">
+            <a href="#"></a>
+        </div>
+
+
+
+        <div class="row">
+            One of three columns
+        </div> 
+    </div>
+</div>
+
+<script>
+    async function GetChats(e)
+    {
+       e.preventDefault();
+ 
+            try {
+      const res = await fetch("https://localhost:5030/chats", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" } 
+      });
+      foreach(var chat in res)
+        if (res.status === 201 || res.status === 200) { 
+
+        } else { 
+
+        }
+    } 
+    catch (error) 
+    {
+        errorAlert.innerText = "Не удалось связаться с сервером.";
+        errorAlert.style.display = "block";
+        console.error("Ошибка:", error); 
+    } 
+}
+</script>
