@@ -1,11 +1,10 @@
 ﻿using Messanger.Frontend.Enums;
-using Microsoft.AspNetCore.Identity.Data;
 
 namespace Messanger.Frontend.Services
 {
     public interface IRegisterService
     {
-        public Task<CodeTypes> RegValitation(RegisterRequest RegRequest);
+        public Task<CodeTypes> RegValitation((string login, string name, string email, string password, string passwordrepeat);
       
     }
 }

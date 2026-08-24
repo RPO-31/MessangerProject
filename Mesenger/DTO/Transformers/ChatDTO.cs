@@ -10,12 +10,12 @@ namespace Mesenger.Api.DTO.Transformers
             return new ChatViewModel()
             {
                 Id = chat.Id,
-                ChatType = chat.ChatType,
+                ChatType = chat.ChatType.ToString(),
                 Name = chat.Name,
                 CreatedAt = chat.CreatedAt,
-                //Messages = chat.Messages,
-                Users = chat.Users
-            };
+                Messages = MessageDTO.MessagesToViewModel(chat.Messages),
+                Users = UserDTO.UsersToViewModel(chat.Users)
+            }; 
         }    
         public static List<ChatViewModel> ChatsToViewModel(List<Chat> chats)
         {

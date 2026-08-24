@@ -5,6 +5,6 @@ namespace Messanger.Api.Services.Interfaces
 {
     public interface IRegisterService
     { 
-        Task<EResultCode> RegValidation(RegisterRequest RegRequest);  
+        Task<Result> RegValidation(RegisterRequest RegRequest);  
     }
 }

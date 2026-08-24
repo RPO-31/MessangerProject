@@ -14,13 +14,13 @@ namespace Messanger.Api.Controllers
     {
         private readonly IRegisterService _RegisterService;
         private readonly ILoginService _LoginService;
-        private readonly ISearchUsersService _SearchUsersService;
+        private readonly ISearchUsersService _SearchUsersService; 
 
         public AuthController(IRegisterService registerService, ILoginService LoginService, ISearchUsersService SearchUsersService)
         {
             _RegisterService = registerService;
             _LoginService = LoginService;
-            _SearchUsersService = SearchUsersService;
+           _SearchUsersService = SearchUsersService;
         }
         
         [Authorize]
@@ -32,53 +32,25 @@ namespace Messanger.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult RegValid(RegisterRequest RegRequest)
+        public IActionResult RegValid([FromBody] RegisterRequest RegRequest)
         {
             var result = _RegisterService.RegValidation(RegRequest).Result;
-            switch (result)
-            {
-                case EResultCode.Success:
-                    return Ok();
-                    break;
-                case EResultCode.Invalid_NameOROutputName:
-                    return BadRequest("неправильно введено Имя или отоб. Имя");
-                    break;
-                case EResultCode.Invalid_Password:
-                    return NoContent();
-                    break;
-                case EResultCode.Invalid_Email:
-                    return NoContent();
-                    break;
-                case EResultCode.SomeFieldsEmpty:
-                    return NoContent();
-                    break;
-                default:
-                    return NoContent();
-                    break;
-            }
-            
-            /*return result;[FromQuery]string Name, [FromQuery] string OutputName, [FromQuery] string Email, [FromQuery] string Password*/
+
+            if (result.SResultCode == EResultCode.Success)
+                return Created();
+            else
+                return BadRequest( new { message = result.SMessage } );
         }
         
-        [HttpPost("login")]
         [AllowAnonymous]
-        public IActionResult LogValidation([FromQuery] string Password, [FromQuery] string NameOrEmail)
+        [HttpPost("login")]
+        public IActionResult LogValidation([FromBody] LoginRequest loginRequest)
         {
-            var result = _LoginService.LogValidation(NameOrEmail, Password).Result;
-
-             
-            switch(result)
-            {
-                case EResultCode.Success:
-                    return Ok();
-                    break;
-                case EResultCode.NotFound:
-                    return Unauthorized("не авторизован");
-                    break;
-                default:
-                    return Unauthorized("Error");
-                    break;
-            }
+            var result = _LoginService.LogValidation(loginRequest).Result;
+            if (result.SResultCode == EResultCode.Success)
+                return Created();
+            else
+                return BadRequest(new { message = result.SMessage });
         }
 
         [Authorize]
@@ -86,19 +58,24 @@ namespace Messanger.Api.Controllers
         public IActionResult IsAuthorized()
         {
             var id = HttpContext.User.FindFirst("Id")?.Value;
-            if(id != null)
-                return Ok(_SearchUsersService.SearchUserByIdAsync(Convert.ToInt32(id)).Result);
-            return NotFound();
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                var result = _SearchUsersService.SearchUserByIdAsync(Convert.ToInt32(id)).Result;
+                if(result != null)
+                    return Ok();
+            
+            }
+            return NotFound("Не Авторизован!");
         }
         [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {
             var result = _LoginService.LogOut().Result;
-            if (result == EResultCode.Success)
-                return Ok();
+            if (result.SResultCode == EResultCode.Success)
+                return Ok(new { message = result.SMessage });
             else
-                return NotFound();
+                return NotFound(new { message = result.SMessage });
         }
     }
 } 

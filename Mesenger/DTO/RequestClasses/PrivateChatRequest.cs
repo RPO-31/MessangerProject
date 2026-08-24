@@ -2,5 +2,6 @@
 {
     public class PrivateChatRequest
     {
+        public int UserId { get; set; }
     }
 }

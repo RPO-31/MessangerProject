@@ -43,7 +43,7 @@ namespace Messanger.Api.Services
                 return userviewmodel;
             }
             else
-                return new UserViewModel();
+                return null;
         }
         public bool Search(string Name, string OtherName)
         {

@@ -1,4 +1,5 @@
-﻿using Messanger.Api.Enums;
+﻿using Mesenger.Api.DTO.RequestClasses;
+using Messanger.Api.Enums;
 using Messanger.Api.Services.Interfaces;
 using Messanger.DataAccess.Models;
 using Messenger.Repository.Interfaces;
@@ -20,21 +21,25 @@ namespace Messanger.Api.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<EResultCode> LogValidation(string NameOrEmail, string Password)
-        {
+        public async Task<Result> LogValidation(LoginRequest logRequest)
+        { 
+            
+            if(logRequest == null)
+                return new Result(EResultCode.NotFound, "нету данных!");
+            
             var Users = await _UserRepository.GetAsync(); 
-            var user = Users.Where(u => u.Name.Equals(NameOrEmail) || u.Email.Equals(NameOrEmail)).FirstOrDefault();
+            var user = Users.Where(u => string.Equals(u.Name,logRequest.NameOrEmail) || string.Equals(u.Email, logRequest.NameOrEmail)).FirstOrDefault();
              
             if( user == null)
             {
-                return EResultCode.NotFound;
+                return new Result(EResultCode.NotExist, "данного пользователя не существует");
             }
-            var passwordHasher = new PasswordHasher<string>();
+            //var passwordHasher = new PasswordHasher<User>();
 
-            var result = passwordHasher.VerifyHashedPassword("", user.Password, Password); 
+            //var result = passwordHasher.VerifyHashedPassword(user, user.Password, logRequest.Password); 
             
-            if(result == PasswordVerificationResult.Failed)
-                return EResultCode.Invalid_Password;
+            //if(result == PasswordVerificationResult.Failed)
+                //return new Result(EResultCode.Invalid_Field, "неверный пароль");
 
             var claims = new List<Claim>()
             {
@@ -46,28 +51,28 @@ namespace Messanger.Api.Services
 
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
-                return EResultCode.DbError;
+                return new Result(EResultCode.DbError, "");
 
             await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties
             {
                 IsPersistent = true,
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1)
             });
-            if (result == PasswordVerificationResult.Success)
-                return EResultCode.Success;
-            else
-                return EResultCode.Invalid_Password;
+            //if (result == PasswordVerificationResult.Success)
+                return new Result(EResultCode.Success, "успешно");
+            //else
+            //    return new Result(EResultCode.Invalid_Field, "успешно, однако нужен новый хэш для пароля!");
         }
 
-        public async Task<EResultCode> LogOut()
+        public async Task<Result> LogOut()
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
-                return EResultCode.DbError;
+                return new Result(EResultCode.DbError, "");
 
             await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            return EResultCode.Success;
+            return new Result(EResultCode.Success, "Успешно");
         }
     }
 } 

@@ -1,4 +1,5 @@
-﻿using Mesenger.Api.Services.Interfaces;
+﻿using Mesenger.Api.DTO.RequestClasses;
+using Mesenger.Api.Services.Interfaces;
 using Messanger.Api.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +19,26 @@ namespace Mesenger.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("private/{Id}")]
-        public IActionResult CreatePrivateChat(int Id)
+        [HttpPost("private")]
+        public IActionResult CreatePrivateChat([FromBody] PrivateChatRequest PrivateRequest)
         {
-            var result = _ChatService.CreatePrivateChat(Id).Result;
+            var result = _ChatService.CreatePrivateChat(PrivateRequest).Result;
             if(result.Item2 == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
+
+        [Authorize]
+        [HttpPost("group/{Id}")]
+        public IActionResult CreateGroupChat(GroupChatRequest GroupRequest)
+        {
+            var result = _ChatService.CreateGroupChat(GroupRequest).Result;
+            if (result.Item2 == null) 
             {
                 return NotFound();
             }
@@ -36,21 +52,21 @@ namespace Mesenger.Api.Controllers
         [HttpGet]
         public IActionResult GetChats()
         {
-            var result = _ChatService.GetChats();
-            if (result != null)
-                return Ok(result);
+            var result = _ChatService.GetChats().Result;
+            if (result.Item1.SResultCode == EResultCode.Success)
+                return Ok(result.Item2);
             else
-                return NotFound();
+                return NotFound(new { message = result.Item1.SMessage });
         }
         [Authorize]
         [HttpGet("{Id}")]
         public IActionResult GetChatsById(int Id)
         {
-            var result = _ChatService.GetChats();
-            if (result != null)
-                return Ok(result);
+            var result = _ChatService.GetChatById(Id).Result;
+            if (result.Item1.SResultCode == EResultCode.Success)
+                return Ok(result.Item2);
             else
-                return NotFound();
+                return NotFound(new { message = result.Item1.SMessage });
         }
     }
 } 

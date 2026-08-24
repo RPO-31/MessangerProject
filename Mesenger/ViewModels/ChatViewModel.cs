@@ -7,14 +7,14 @@ namespace Messanger.Api.ViewModels
     {
         public int Id { get; set; }
 
-        public EChatType ChatType { get; set; }
+        public string ChatType { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public string Name { get; set; }
 
-        public List<Message> Messages { get; set; }
+        public List<MessageViewModel> Messages { get; set; }
 
-        public List<User> Users { get; set; }
+        public List<UserViewModel> Users { get; set; }
     }
 }

@@ -12,32 +12,33 @@ namespace Messanger.Api.Services
     public class RegisterService : IRegisterService
     {
         private readonly IUserRepository _UserRepository; 
-        private string PasswordRegex = @"^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@!!%*?&]{8,}$)";
+        private string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$";
         private string EmailRegex = @"^(?=.{1,254})(?=.{1,64}@)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}";
         public RegisterService(IUserRepository userRepository)
         {
             _UserRepository = userRepository;
         }
-        public async Task<EResultCode> RegValidation(RegisterRequest RegRequest)
+        public async Task<Result> RegValidation(RegisterRequest RegRequest)
         {
             var users = await _UserRepository.GetAsync();
             if (string.IsNullOrWhiteSpace(RegRequest.Name) || string.IsNullOrWhiteSpace(RegRequest.OutputName) || string.IsNullOrWhiteSpace(RegRequest.Password) || string.IsNullOrWhiteSpace(RegRequest.Email))
-                return EResultCode.SomeFieldsEmpty;
+                return new Result(EResultCode.SomeFieldsEmpty, "Некоторые поля имеют нулевые значения!");
+            
 
             if(users.Any(u => u.Name == RegRequest.Name || u.OutputName == RegRequest.OutputName))
             {
-                return EResultCode.Invalid_NameOROutputName;
+                return new Result(EResultCode.Invalid_Field, "ОО люди с таким Именем или Отоб. Именем уже существуют!");
             }
 
-            if (Regex.IsMatch(RegRequest.Password, PasswordRegex))
-                return EResultCode.Invalid_Password;
+            if (!Regex.IsMatch(RegRequest.Password, PasswordRegex))
+                return new Result(EResultCode.Invalid_Field, "Неправильный пароль!");
 
-            if (Regex.IsMatch(RegRequest.Email, EmailRegex))
-                return EResultCode.Invalid_Email;
+            if (!Regex.IsMatch(RegRequest.Email, EmailRegex))
+                return new Result(EResultCode.Invalid_Field, "Неправильный эмейл!"); 
 
             var result = await AddUserToDb(RegRequest);
-            
-            return result;
+
+            return new Result(EResultCode.Success, "Успешная регистрация!");
         }
 
         private async Task<EResultCode> AddUserToDb(RegisterRequest RegRequest)
