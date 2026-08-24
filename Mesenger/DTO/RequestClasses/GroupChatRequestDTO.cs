@@ -1,6 +1,6 @@
 ﻿namespace Mesenger.Api.DTO.RequestClasses
 {
-    public class GroupChatRequest
+    public class GroupChatRequestDTO
     {
         public string Name;
 

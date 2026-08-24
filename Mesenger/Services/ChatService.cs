@@ -5,8 +5,7 @@ using Messanger.Api.Enums;
 using Messanger.Api.ViewModels;
 using Messanger.DataAccess.Enums;
 using Messanger.DataAccess.Models;
-using Messenger.Repository.Interfaces;
-using System;
+using Messenger.Repository.Interfaces; 
 
 namespace Mesenger.Api.Services
 {
@@ -23,7 +22,7 @@ namespace Mesenger.Api.Services
             _ChatRepository = ChatRepository;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<(Result, ChatViewModel)> CreatePrivateChat(PrivateChatRequest PrivateRequest)
+        public async Task<(Result, ChatViewModel)> CreatePrivateChat(PrivateChatRequestDTO PrivateRequest)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -31,20 +30,24 @@ namespace Mesenger.Api.Services
                 return (new Result(EResultCode.DbError, ""), null!);
 
             var MainId = Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value);
-            var ResultCode = CreatePrivateChatValidation(PrivateRequest);
+            var ResultCode = await CreatePrivateChatValidation(PrivateRequest);
 
-            if(ResultCode.Item1 == EResultCode.Success)
+            if(ResultCode.Item1.SResultCode == EResultCode.Success)
             {
                 var usersToChat = new List<User>();
-                usersToChat.Add(_UserRepository.GetByIdAsync(MainId).Result);
-                usersToChat.Add(_UserRepository.GetByIdAsync(PrivateRequest.UserId).Result);
+                usersToChat.Add(await _UserRepository.GetByIdAsync(MainId));
+                usersToChat.Add(await _UserRepository.GetByIdAsync(PrivateRequest.UserId));
                 var chat = new Chat() { ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Users = usersToChat };
-                _UserRepository.GetByIdAsync(MainId).Result.Chats.Add(chat);
-                _UserRepository.GetByIdAsync(PrivateRequest.UserId).Result.Chats.Add(chat);
+                var MainUser = await _UserRepository.GetByIdAsync(MainId);
+                MainUser.Chats.Add(chat);
+                
+                var user = await _UserRepository.GetByIdAsync(PrivateRequest.UserId);
+                user.Chats.Add(chat);
+
                 await _ChatRepository.AddAsync(chat);
                 return (new Result(EResultCode.Success, "Успешно"), ChatDTO.ChatToViewModel(chat)); 
             }
-            else if(ResultCode.Item1 == EResultCode.ThisRoomAlreadyExist)
+            else if(ResultCode.Item1.SResultCode == EResultCode.ThisRoomAlreadyExist)
             {
                 return (new Result(EResultCode.ThisRoomAlreadyExist, "Комната уже существует"), ResultCode.Item2);
             }
@@ -54,14 +57,14 @@ namespace Mesenger.Api.Services
             }
         }
 
-        public async Task<(Result, ChatViewModel)> CreateGroupChat(GroupChatRequest GroupRequest)
+        public async Task<(Result, ChatViewModel)> CreateGroupChat(GroupChatRequestDTO GroupRequest)
         {
             var result = CreateGroupChatValidation(GroupRequest);
 
             var httpContext = _httpContextAccessor.HttpContext;
-            var Users = _UserRepository.GetAsync().Result;
+            var Users = await _UserRepository.GetAsync();
             if (httpContext == null)
-                return (new Result(EResultCode.DbError, "лолдбдэррйоу"), default!);
+                return (new Result(EResultCode.DbError, "не авторизован!"), default!);
 
             var MainId = Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value);
             var GroupUsers = new List<User>();
@@ -94,11 +97,11 @@ namespace Mesenger.Api.Services
             var httpContext = _httpContextAccessor.HttpContext;
 
             if (httpContext == null)
-                return (new Result(EResultCode.DbError, "дбдэррбро"), null);
+                return (new Result(EResultCode.DbError, "не авторизован!"), null);
 
-            var user = _UserRepository.GetByIdAsync(Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value));
+            var user = await _UserRepository.GetByIdAsync(Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value));
 
-            var chats = user.Result.Chats;
+            var chats = user.Chats;
             
             return (new Result(EResultCode.Success, "Успешно"), ChatDTO.ChatsToViewModel(chats));
         }
@@ -111,51 +114,52 @@ namespace Mesenger.Api.Services
             if (httpContext == null)
                 return (new Result(EResultCode.DbError, "дбдэррбро"), null);
 
-            var user = _UserRepository.GetByIdAsync(Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value)).Result;
+            var user = await _UserRepository.GetByIdAsync(Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value));
 
             var chat = user.Chats.First(c => c.Id == Id); 
 
             return (new Result(EResultCode.Success, "Успешно"), ChatDTO.ChatToViewModel(chat));
         }
 
-        public (EResultCode, ChatViewModel) CreatePrivateChatValidation(PrivateChatRequest PrivateRequest)
+        public async Task<(Result, ChatViewModel)> CreatePrivateChatValidation(PrivateChatRequestDTO PrivateRequest)
         { 
 
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
-                return (EResultCode.DbError, null!);
+                return (new Result(EResultCode.DbError, ""), null!);
             var MainId = Convert.ToInt32(httpContext.User.FindFirst("Id")?.Value);
-            var Users = _UserRepository.GetAsync().Result;
-            var Chats = _ChatRepository.GetAsync().Result;
+            var Users = await _UserRepository.GetAsync();
+            var Chats = await _ChatRepository.GetAsync();
             if (Users[PrivateRequest.UserId] != null) 
-                return (EResultCode.NotExist, null!); 
+                return (new Result(EResultCode.NotExist, ""), null!); 
             if (MainId != PrivateRequest.UserId)
-                return (EResultCode.Error, null!);
+                return (new Result(EResultCode.Error, ""), null!);
 
             if(false)//haveNotPermission
-                return (EResultCode.HasNotPermission, new ChatViewModel());
+                return (new Result(EResultCode.HasNotPermission, ""), new ChatViewModel());
             var IsExist = Chats.Where(c => c.Users.Contains(Users[MainId]) && c.Users.Contains(Users[PrivateRequest.UserId])).FirstOrDefault();
             if(IsExist != null)
-                return (EResultCode.ThisRoomAlreadyExist, ChatDTO.ChatToViewModel(IsExist));
-            return (EResultCode.Success, null!);
+                return (new Result(EResultCode.ThisRoomAlreadyExist, ""), ChatDTO.ChatToViewModel(IsExist));
+            return (new Result(EResultCode.Success, ""), null!);
         }
 
-        public EResultCode CreateGroupChatValidation(GroupChatRequest GroupRequest) 
+        public async Task<Result> CreateGroupChatValidation(GroupChatRequestDTO GroupRequest) 
         {
+
             if (string.IsNullOrWhiteSpace(GroupRequest.Name))
             {
-                return EResultCode.SomeFieldsEmpty;
+                return new Result(EResultCode.SomeFieldsEmpty, "");
             }
-            var users = _UserRepository.GetAsync().Result;
+            var users = await _UserRepository.GetAsync();
 
             var existedUsers = users.All(u => GroupRequest.UsersId.Contains(u.Id));
             if (!existedUsers)
-                return EResultCode.NotExist;
+                return new Result(EResultCode.NotExist, "");
 
             if (GroupRequest.UsersId.Count < MinCountGroupMembers)
-                return EResultCode.Error;
+                return new Result(EResultCode.Error, "");
 
-            return EResultCode.Success;
+            return new Result(EResultCode.Success, "");
         }
     }
 } 

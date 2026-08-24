@@ -1,6 +1,6 @@
 ﻿namespace Mesenger.Api.DTO.RequestClasses
 {
-    public class PrivateChatRequest
+    public class PrivateChatRequestDTO
     {
         public int UserId { get; set; }
     }

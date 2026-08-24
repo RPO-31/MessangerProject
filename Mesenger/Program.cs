@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins("https://localhost:5031")
-                   .AllowCredentials() // Важно для cookies // URL вашего фронтенда
+                   .AllowCredentials() // Р’Р°Р¶РЅРѕ РґР»СЏ cookies // URL С„СЂРѕРЅС‚РµРЅРґР°
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });

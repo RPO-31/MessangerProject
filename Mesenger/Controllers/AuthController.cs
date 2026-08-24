@@ -32,9 +32,9 @@ namespace Messanger.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult RegValid([FromBody] RegisterRequest RegRequest)
+        public async Task<IActionResult> RegValid([FromBody] RegisterRequestDTO RegRequest)
         {
-            var result = _RegisterService.RegValidation(RegRequest).Result;
+            var result = await _RegisterService.RegValidation(RegRequest);
 
             if (result.SResultCode == EResultCode.Success)
                 return Created();
@@ -44,9 +44,9 @@ namespace Messanger.Api.Controllers
         
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult LogValidation([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> LogValidation([FromBody] LoginRequestDTO loginRequest)
         {
-            var result = _LoginService.LogValidation(loginRequest).Result;
+            var result = await _LoginService.LogValidation(loginRequest);
             if (result.SResultCode == EResultCode.Success)
                 return Created();
             else
@@ -55,12 +55,12 @@ namespace Messanger.Api.Controllers
 
         [Authorize]
         [HttpGet("me")] 
-        public IActionResult IsAuthorized()
+        public async Task<IActionResult> IsAuthorized()
         {
             var id = HttpContext.User.FindFirst("Id")?.Value;
             if (!string.IsNullOrWhiteSpace(id))
             {
-                var result = _SearchUsersService.SearchUserByIdAsync(Convert.ToInt32(id)).Result;
+                var result = await _SearchUsersService.SearchUserByIdAsync(Convert.ToInt32(id));
                 if(result != null)
                     return Ok();
             
@@ -69,9 +69,9 @@ namespace Messanger.Api.Controllers
         }
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            var result = _LoginService.LogOut().Result;
+            var result = await _LoginService.LogOut();
             if (result.SResultCode == EResultCode.Success)
                 return Ok(new { message = result.SMessage });
             else

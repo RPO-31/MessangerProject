@@ -1,6 +1,6 @@
 ﻿namespace Mesenger.Api.DTO.RequestClasses
 {
-    public class RegisterRequest
+    public class RegisterRequestDTO
     {
 
         public string Name { get; set; }

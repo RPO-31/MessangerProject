@@ -1,12 +1,9 @@
 ﻿using Mesenger.Api.DTO.RequestClasses;
 using Messanger.Api.Enums;
 using Messanger.Api.Services.Interfaces;
-using Messanger.DataAccess.Models;
 using Messenger.Repository.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 namespace Messanger.Api.Services
 {
@@ -21,7 +18,7 @@ namespace Messanger.Api.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Result> LogValidation(LoginRequest logRequest)
+        public async Task<Result> LogValidation(LoginRequestDTO logRequest)
         { 
             
             if(logRequest == null)

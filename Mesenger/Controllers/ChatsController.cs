@@ -20,9 +20,9 @@ namespace Mesenger.Api.Controllers
 
         [Authorize]
         [HttpPost("private")]
-        public IActionResult CreatePrivateChat([FromBody] PrivateChatRequest PrivateRequest)
+        public async Task<IActionResult> CreatePrivateChat([FromBody] PrivateChatRequestDTO PrivateRequest)
         {
-            var result = _ChatService.CreatePrivateChat(PrivateRequest).Result;
+            var result = await _ChatService.CreatePrivateChat(PrivateRequest);
             if(result.Item2 == null)
             {
                 return NotFound();
@@ -35,9 +35,9 @@ namespace Mesenger.Api.Controllers
 
         [Authorize]
         [HttpPost("group/{Id}")]
-        public IActionResult CreateGroupChat(GroupChatRequest GroupRequest)
+        public async Task<IActionResult> CreateGroupChat(GroupChatRequestDTO GroupRequest)
         {
-            var result = _ChatService.CreateGroupChat(GroupRequest).Result;
+            var result = await _ChatService.CreateGroupChat(GroupRequest);
             if (result.Item2 == null) 
             {
                 return NotFound();
@@ -50,9 +50,9 @@ namespace Mesenger.Api.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult GetChats()
+        public async Task<IActionResult> GetChats()
         {
-            var result = _ChatService.GetChats().Result;
+            var result = await _ChatService.GetChats();
             if (result.Item1.SResultCode == EResultCode.Success)
                 return Ok(result.Item2);
             else
@@ -60,9 +60,9 @@ namespace Mesenger.Api.Controllers
         }
         [Authorize]
         [HttpGet("{Id}")]
-        public IActionResult GetChatsById(int Id)
+        public async Task<IActionResult> GetChatsById(int Id)
         {
-            var result = _ChatService.GetChatById(Id).Result;
+            var result = await _ChatService.GetChatById(Id);
             if (result.Item1.SResultCode == EResultCode.Success)
                 return Ok(result.Item2);
             else
