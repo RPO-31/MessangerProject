@@ -1,22 +1,29 @@
-﻿@model RegRequest  
+﻿@model RegRequest
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
 @{
-    ViewData["Title"] = "Register";
-} 
+    ViewData["Title"] = "Login";
+}
+
+
+<p id = "errorLog" style = "color:red;"></p>
 
 
 <div class="text-center">
-    <form method="post" onsubmit="SendData(event)">
+    <form asp-controller="Account" asp-action="Register" method="post">
+    
+        <div class="form-group">
+            <label asp-for="login"></label>
+            <input asp-for="login" class="form-control" />
+            <span asp-validation-for="login" class="text-danger"></span>
+        </div>
     
         <div class="form-group">
             <label asp-for="name"></label>
             <input asp-for="name" class="form-control" />
             <span asp-validation-for="name" class="text-danger"></span>
-        </div>
-    
-        <div class="form-group">
-            <label asp-for="outputName"></label>
-            <input asp-for="outputName" class="form-control" />
-            <span asp-validation-for="outputName" class="text-danger"></span>
         </div>
     
         <div class="form-group">
@@ -30,59 +37,45 @@
             <input asp-for="password" class="form-control" />
             <span asp-validation-for="password" class="text-danger"></span>
         </div>
-
-		<div class="form-group">
-			<label asp-for="passwordrepeat"></label>
-            <input asp-for="passwordrepeat" class="form-control"/>
+    
+        <div class="form-group">
+            <label asp-for="passwordrepeat"></label>
+            <input asp-for="passwordrepeat" class="form-control" />
             <span asp-validation-for="passwordrepeat" class="text-danger"></span>
         </div>
-		<button type="submit" class="btn btn-primary">зарегистрироваться</button>
+        <button type="submit" class="btn btn-primary">зарегистрироваться</button>
 
-	</form>
-
-    <div id="error-alert" class="alert alert-danger" style="display:none;"></div>
-</div> 
+    </form>
+</div>
 
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+
 <script>
+        async function registerUser() {
+            const usernameVi = document.getElementById('name').value;
+            const loginVi = document.getElementById('login').value;
+            const emailVi = document.getElementById('email').value.trim();
+            const passwordVi = document.getElementById('password').value;
+            const passwordrepeatVi = document.getElementById('passwordrepeat').value;
 
-    async function SendData(e)
-    {
-        e.preventDefault();
-        let errorAlert = document.getElementById("error-alert");
-        errorAlert.style.display = "none"; 
+            const response = await fetch('auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.message);
 
-        const data =
-        {
-          name: document.getElementById("name").value,
-          outputName: document.getElementById("outputName").value,
-          password: document.getElementById("password").value,
-          email: document.getElementById("email").value
-        };
+            if (!PasswordRegex.text(passwordVi)){
+                errorLog.innerText = "Пароль должен содержать не менее 8 символов и латинские буквы";
+                return;
+            }
 
-       try {
-         const res = await fetch("https://localhost:5030/auth/register", {
-            method: "POST", 
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
+            if (!EmailRegex.text(passwordVi)){
+                errorLog.innerText = "некоректный формат Email";
+                return;
+            }
 
-          if (res.status === 201 || res.status === 200) { 
-              window.location.href = "/Account/Login";
-          } else {
-              const errData = await res.json();
-              errorAlert.innerText = errData.message || "Ошибка регистрации.";
-              errorAlert.style.display = "block";
-          }
-      } catch (error) {
-          errorAlert.innerText = "Не удалось связаться с сервером.";
-          errorAlert.style.display = "block";
-          console.error("Ошибка:", error); 
-      }
+
     }
 </script>
