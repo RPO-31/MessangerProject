@@ -7,7 +7,7 @@ namespace Messanger.Frontend.Services
     public class RegisterService
 
     {
-        public Task<CodeTypes> RegValitation(string login, string name, string email, string password, string passwordrepeat)
+        public CodeTypes RegValitation(string login, string name, string email, string password, string passwordrepeat)
         {
             string PasswordRegex = @"^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@!!%*?&]{8,}$)";
 
@@ -15,18 +15,15 @@ namespace Messanger.Frontend.Services
 
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passwordrepeat))
             {
-                return Task.FromResult(CodeTypes.Success);
+                return CodeTypes.Success;
             }
 
-            if (!Regex.IsMatch(password, PasswordRegex) || !Regex.IsMatch(passwordrepeat, PasswordRegex) || !password.Equals(passwordrepeat))
-                return NotFound();
+            //if (!Regex.IsMatch(password, PasswordRegex) || !Regex.IsMatch(passwordrepeat, PasswordRegex) || !password.Equals(passwordrepeat))
+                //return NotFound();
 
-            if (!Regex.IsMatch(email, EmailRegex))
-                return NotFound();
-
-
-
-            return Content("");
+           // if (!Regex.IsMatch(email, EmailRegex))
+                //return NotFound(); 
+            return CodeTypes.Error;
         }
 
     }
