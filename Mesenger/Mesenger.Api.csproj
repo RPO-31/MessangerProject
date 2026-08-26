@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Messenger.DataAccess\Messenger.Api.DataAccess.csproj" />
     <ProjectReference Include="..\Messenger.Repository\Messenger.Api.Repository.csproj" />
   </ItemGroup>
