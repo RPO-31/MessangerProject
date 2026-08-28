@@ -27,12 +27,18 @@ namespace Messenger.Api.Repository.Repositories
                         new Chat(){ Id = 1, ChatType = EChatType.Group, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak2"}, new Message(){Text = "трижды"}  }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
                     }
                 },
-                new User{Id = 2, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig2", Password = "Z9y$KlmN", RegDate = DateTime.Now, Chats = new List<Chat>()
+                new User{Id = 2, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig3", Password = "Z9y$KlmN", RegDate = DateTime.Now, Chats = new List<Chat>()
                     {
                         new Chat(){ Id = 0, ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak"}, new Message(){Text = "дважды"} }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
                         new Chat(){ Id = 1, ChatType = EChatType.Group, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak2"}, new Message(){Text = "трижды"}  }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
                     }
-                }, 
+                },
+                new User{Id = 2, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig4", Password = "Z9y$KlmN", RegDate = DateTime.Now, Chats = new List<Chat>()
+                    {
+                        new Chat(){ Id = 0, ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak"}, new Message(){Text = "дважды"} }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
+                        new Chat(){ Id = 1, ChatType = EChatType.Group, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak2"}, new Message(){Text = "трижды"}  }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
+                    }
+                },
                 //new User{Id = 4, Email = "Alcest@gmail.com", Name = "Альцест", OutputName = "Альцест raketa", Password = "Z9y$KlmN", RegDate = DateTime.Now},
                 //?new User{Id = 5, Email = "SirPiligrim@gmail.com", Name = "СирПилигрим", OutputName = "СирПилигрим sirpilya", Password = "Z9y$KlmN", RegDate = DateTime.Now},
         };

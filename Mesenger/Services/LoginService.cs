@@ -34,16 +34,16 @@ namespace Messanger.Api.Services
                 return new Result(EResultCodes.NotExist, "Данного пользователя не существует!");
             }
 
-            var passwordHasher = new PasswordHasher<User>();
-            var result = passwordHasher.VerifyHashedPassword(user, user.Password, logRequest.Password);
-
-            if (result == PasswordVerificationResult.Failed)
-                return new Result(EResultCodes.Invalid_Field, "Неверный пароль!");
-
-            else if (result == PasswordVerificationResult.SuccessRehashNeeded)
-            {
-                user.Password = passwordHasher.HashPassword(user, logRequest.Password);
-            }
+            //var passwordHasher = new PasswordHasher<User>();
+            //var result = passwordHasher.VerifyHashedPassword(user, user.Password, logRequest.Password);
+            //
+            //if (result == PasswordVerificationResult.Failed)
+            //    return new Result(EResultCodes.Invalid_Field, "Неверный пароль!");
+            //
+            //else if (result == PasswordVerificationResult.SuccessRehashNeeded)
+            //{
+            //    user.Password = passwordHasher.HashPassword(user, logRequest.Password);
+            //}
 
             var claims = new List<Claim>()
             {

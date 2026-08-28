@@ -15,7 +15,7 @@ namespace Messanger.Frontend.Controllers.Account
         [HttpPost]
         public IActionResult Register(RegRequest regrequest)
         {
-            return View();
+            return View(regrequest);
         }
         [HttpGet]
         public IActionResult Login()
@@ -25,7 +25,7 @@ namespace Messanger.Frontend.Controllers.Account
         [HttpPost]
         public IActionResult Login(LogRequest logrequest)
         {
-            return View();
+            return View(logrequest);
         } 
         public IActionResult LogOut()
         {

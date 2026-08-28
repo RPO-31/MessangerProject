@@ -3,3 +3,23 @@
 *@
 @{
 }
+<script>
+
+    async function LogOut( ) {  
+        try {
+            const res = await fetch("https://localhost:5030/auth/logout", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" } 
+            });
+
+            if (res.status === 201 || res.status === 200) {
+                window.location.href = "/Account/Login";
+            } else { 
+            }
+        } catch (error) { 
+            console.error("Ошибка:", error);
+        }
+    }
+    document.addEventListener("DOMContentLoaded", LogOut);
+</script> 
