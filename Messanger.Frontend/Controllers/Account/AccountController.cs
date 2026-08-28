@@ -27,6 +27,10 @@ namespace Messanger.Frontend.Controllers.Account
         {
             return View();
         } 
+        public IActionResult LogOut()
+        {
+            return View();
+        }
     }
 }
 // редирект или возрат на страницу 

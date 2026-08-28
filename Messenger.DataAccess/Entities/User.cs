@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks; 
-using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;  
 
 namespace Messanger.DataAccess.Models
 {
@@ -21,5 +20,7 @@ namespace Messanger.DataAccess.Models
 
         public DateTime RegDate { get; set; }
 
+        public List<int> ChatsId { get; set; } = new();
+        public List<Chat> Chats { get; set; } = new();
     }
 }

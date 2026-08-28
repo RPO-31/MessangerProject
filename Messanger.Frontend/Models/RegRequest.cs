@@ -25,11 +25,6 @@ namespace Messanger.Frontend.Models
         [Required(ErrorMessage = " поле обязательно для заполнения")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$", ErrorMessage = "пароль должен содержать: \nзаглавную букву \nспец символ \nминимум 8 букв")]
         [Compare("password", ErrorMessage = "Пароли не совпадают!")]
-        public string passwordrepeat { get; set; }
-
-        
-        
-
-
+        public string passwordrepeat { get; set; } 
     }
 }

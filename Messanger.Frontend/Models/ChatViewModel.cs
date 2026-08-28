@@ -6,9 +6,6 @@
 
         public string ChatType { get; set; }
 
-        public DateTime CreatedAt { get; set; } 
-        //public List<MessageViewModel> Messages { get; set; }
-
-        //public List<UserViewModel> Users { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

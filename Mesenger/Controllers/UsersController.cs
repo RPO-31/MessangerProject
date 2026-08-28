@@ -1,8 +1,7 @@
-﻿using Messanger.Api.Services.Interfaces;
-using Messanger.Api.ViewModels;
-using Messanger.DataAccess.Models;
-using Messenger.Repository.Repositories;
-using Microsoft.AspNetCore.Http;
+﻿using Messanger.Api.Enums;
+using Messanger.Api.Services.Interfaces;
+using Messanger.Api.ViewModels; 
+using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Mvc;
 
 namespace Messanger.Api.Controllers
@@ -18,11 +17,12 @@ namespace Messanger.Api.Controllers
             _SearchService = SearchService;
         }
 
-        [HttpGet] 
-        public async Task<List<UserViewModel>> SearchUsers([FromQuery]string search)
+        [Authorize]
+        [HttpGet]
+        public async Task<List<UserViewModel>> SearchUsers([FromQuery] string name)
         {
-            return await _SearchService.SearchUsersAsync(search);
+            return await _SearchService.SearchUsersAsync(Uri.UnescapeDataString(name));
         }
 
     }
-} 
+}

@@ -1,0 +1,278 @@
+﻿@using Messanger.Frontend.Enums
+@model SearchUserRequest
+@{
+    ViewData["Title"] = "Поиск пользователей";
+}
+
+<div class="text-center">
+    <form asp-controller="Users" onsubmit="GetUsers(event)" method="post">
+        <div class="form-group">
+            <label asp-for="SearchName">Введите имя пользователя:</label>
+            <input asp-for="SearchName" class="form-control" id="SearchName" />
+            <span asp-validation-for="SearchName" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Поиск</button>
+        <p id="error-alert" style="color:red; display:none;"></p>
+    </form>
+
+    <div style="margin: 20px 0;">
+        <strong>Выбрано пользователей: </strong>
+        <span id="selectedCount">0</span>
+
+        <form asp-controller="Chats" asp-action="CreatePrivate" id="SendIds" method="post">
+            <input type="hidden" id="tempUsersId" name="UsersId" value="-1"/> 
+            <button type="button" class="btn btn-primary" id="saveUsersBtn"> 
+                💾 Сохранить выбранных пользователей 
+            </button> 
+        </form>
+        <button id="clearSelectionBtn" class="btn btn-secondary" style="margin-left: 10px;">
+            🗑️ Очистить выбор
+        </button>
+    </div>
+
+    <ul id="Users" style="list-style: none; padding: 0;">
+        <!-- Результаты поиска будут здесь -->
+    </ul>
+</div>
+
+<script>
+    // ===== ENUM =====
+    const ChatTypeEnum = {
+        None: @((int)EChatType.None),
+        Private: @((int)EChatType.Private),
+        Group: @((int)EChatType.Group)
+    };
+    
+    const currentChatType = @((int)Model.ChatType);
+    let Sizes = (currentChatType === ChatTypeEnum.Private) ? [1, 1] : [3, 10];
+    
+    // ===== ХРАНИЛИЩЕ ВЫБРАННЫХ ID =====
+    let selectedUserIds = new Set();
+
+    // ===== ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА =====
+    function updateSelectedCount() {
+        const countElement = document.getElementById('selectedCount');
+        countElement.textContent = selectedUserIds.size;
+
+        if (selectedUserIds.size >= Sizes[0] && selectedUserIds.size <= Sizes[1]) {
+            countElement.style.color = '#28a745';
+            countElement.style.fontWeight = 'bold';
+        } else {
+            countElement.style.color = 'gray';
+        }
+    }
+
+    // ===== ОБРАБОТЧИК КЛИКА ПО КНОПКЕ ПОЛЬЗОВАТЕЛЯ =====
+    function handleUserClick(button) {
+        const userId = parseInt(button.dataset.value, 10);
+        const userName = button.dataset.name || 'Пользователь';
+
+        if (selectedUserIds.has(userId)) {
+            selectedUserIds.delete(userId);
+            document.getElementById("tempUsersId").value = -1;
+            button.classList.remove('selected');
+            button.style.backgroundColor = '#007bff';
+            button.textContent = button.dataset.name;
+            console.log(`❌ Удален из выбора: ${userName} (ID: ${userId})`);
+        } else {
+            selectedUserIds.add(userId);
+            document.getElementById("tempUsersId").value = userId;
+            button.classList.add('selected');
+            button.style.backgroundColor = '#28a745';
+            button.textContent = '✅ Выбран';
+            console.log(`✅ Добавлен в выбор: ${userName} (ID: ${userId})`);
+        }
+
+        updateSelectedCount();
+        console.log('Текущий список выбранных ID:', Array.from(selectedUserIds));
+    }
+
+    // ===== ПОИСК ПОЛЬЗОВАТЕЛЕЙ =====
+    async function GetUsers(e) {
+        e.preventDefault();
+
+        const errorAlert = document.getElementById("error-alert");
+        errorAlert.style.display = "none";
+
+        const searchName = document.getElementById("SearchName").value;
+        const params = new URLSearchParams({ name: searchName });
+        
+        if (!searchName.trim()) {
+            errorAlert.innerText = "Введите имя для поиска";
+            errorAlert.style.display = "block";
+            return;
+        } 
+        
+        try { 
+            const res = await fetch(`https://localhost:5030/users?${params.toString()}`, {  
+                method: "GET",
+                credentials: "include", 
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (res.ok) {
+                const users = await res.json();
+
+                if (users && users.length > 0) {
+                    let htmlContent = users.map(user => {
+                        const isSelected = selectedUserIds.has(user.id);
+                        return `
+                            <li style="margin: 5px 0;">
+                                <button class="selectUserBtn ${isSelected ? 'selected' : ''}"
+                                        data-value="${user.id}"
+                                        data-name="${user.outputName}"
+                                        style="background-color: ${isSelected ? '#28a745' : '#007bff'};
+                                               color: white;
+                                               padding: 10px 20px;
+                                               border: none;
+                                               border-radius: 5px;
+                                               cursor: pointer;
+                                               width: 100%;
+                                               text-align: left;
+                                               transition: all 0.3s ease;">
+                                    ${isSelected ? '✅' : ''} ${user.outputName}
+                                </button>
+                            </li>
+                        `;
+                    }).join('');
+                    
+                    document.getElementById('Users').innerHTML = htmlContent;
+
+                    document.querySelectorAll('.selectUserBtn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            handleUserClick(this);
+                        });
+                    });
+                } else {
+                    document.getElementById('Users').innerHTML = `
+                        <li><h3 style="color: gray;">👤 Пользователи не найдены</h3></li>
+                    `;
+                }
+            } else {
+                alert(res.status);
+                document.getElementById('Users').innerHTML = `
+                    <li><h3 style="color: red;">❌ Ошибка при поиске</h3></li>
+                `;
+            }
+        } catch (error) {
+            errorAlert.innerText = "Не удалось связаться с сервером";
+            errorAlert.style.display = "block";
+            console.error("Ошибка:", error);
+        }
+    }
+
+    // ===== СОХРАНЕНИЕ ВЫБРАННЫХ ПОЛЬЗОВАТЕЛЕЙ =====
+    async function saveSelectedUsers(e) {
+        e.preventDefault();
+        
+        const selectedIds = Array.from(selectedUserIds);
+
+        if (currentChatType === ChatTypeEnum.Private && selectedIds.length > 1) {
+            alert('⚠️ Вы должны выбрать одного пользователя!');
+            return;
+        }
+
+        if (currentChatType === ChatTypeEnum.Group && (selectedIds.length < 3 || selectedIds.length > 10)) {
+            alert('⚠️ Для группового чата выберите от 3 до 10 пользователей!');
+            return;
+        }
+
+        if (selectedIds.length === 0) {
+            alert('⚠️ Вы не выбрали ни одного пользователя!');
+            return;
+        }
+
+        document.getElementById("tempUsersId").value = selectedIds[0];
+        
+        // Отправляем форму
+        document.getElementById('SendIds').submit();
+    }
+
+    // ===== ОЧИСТКА ВЫБОРА =====
+    function clearSelection() {
+        if (selectedUserIds.size === 0) {
+            alert('Выбор уже пуст');
+            return;
+        }
+
+        if (!confirm(`Очистить выбор (${selectedUserIds.size} пользователей)?`)) {
+            return;
+        }
+
+        selectedUserIds.clear();
+
+        document.querySelectorAll('.selectUserBtn').forEach(btn => {
+            btn.classList.remove('selected');
+            btn.style.backgroundColor = '#007bff';
+            btn.textContent = `➕ ${btn.dataset.name || 'Добавить'}`;
+        });
+
+        document.getElementById("tempUsersId").value = -1;
+        updateSelectedCount();
+        console.log('🗑️ Выбор очищен');
+    }
+
+    // ===== АВТОРИЗАЦИЯ =====
+    async function AuthMe() {
+        try {
+            const res = await fetch("https://localhost:5030/auth/me", {
+                method: "GET",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (res.status === 401) {
+                window.location.href = "/Account/Login";
+            }
+        } catch (error) {
+            console.error("Ошибка авторизации:", error);
+        }
+    }
+
+    // ===== ИНИЦИАЛИЗАЦИЯ =====
+    document.addEventListener("DOMContentLoaded", function() {
+        // Устанавливаем action формы
+        if (currentChatType === ChatTypeEnum.Private)
+            document.getElementById('SendIds').action = '/Chats/CreatePrivate';
+        else if (currentChatType === ChatTypeEnum.Group)
+            document.getElementById('SendIds').action = '/Chats/CreateGroup';
+        else
+            document.getElementById('SendIds').action = '/Chats/CreatePrivate';
+        
+        AuthMe();
+        updateSelectedCount();
+
+        // Навешиваем обработчики на существующие кнопки
+        document.querySelectorAll('.selectUserBtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                handleUserClick(this);
+            });
+        });
+
+        // Кнопка сохранения
+        document.getElementById('saveUsersBtn').addEventListener('click', saveSelectedUsers);
+
+        // Кнопка очистки
+        document.getElementById('clearSelectionBtn').addEventListener('click', clearSelection);
+    });
+</script>
+
+<style>
+    .selectUserBtn {
+        transition: all 0.3s ease;
+    }
+
+    .selectUserBtn:hover {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+
+    .selectUserBtn.selected {
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    }
+
+    #selectedCount {
+        font-size: 1.2em;
+        transition: all 0.3s ease;
+    }
+</style>

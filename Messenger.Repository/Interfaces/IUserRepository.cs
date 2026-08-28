@@ -1,8 +1,8 @@
 ﻿using Messanger.DataAccess.Models;
 
-namespace Messenger.Repository.Interfaces
+namespace Messenger.Api.Repository.Interfaces
 {
-    public interface IUserRepository 
+    public interface IUserRepository
     {
         public Task<List<User>> GetAsync();
 

@@ -5,16 +5,16 @@
 }
 
 
-<div class="text-center">
+<div class="text-center"> 
     <form method="post" onsubmit="SendData(event)">
         <div class="form-group">
-            <label asp-for="loginOrEmail"></label>
+            <label asp-for="loginOrEmail">JustS@gmail.com</label>
             <input asp-for="loginOrEmail" class="form-control" />
             <span asp-validation-for="loginOrEmail" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="password"></label>
+            <label asp-for="password">Z9y$KlmN</label>
             <input asp-for="password" class="form-control" />
             <span asp-validation-for="password" class="text-danger"></span>
         </div>
@@ -24,6 +24,11 @@
     <div id="error-alert" class="alert alert-danger" style="display:none;"></div>
 </div>
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
     
 
 <script>
@@ -49,7 +54,7 @@
         });
 
           if (res.status === 201 || res.status === 200) { 
-              window.location.href = "/Chats";
+              window.location.href = "/Chats/Index";
           } else {
               const errData = await res.json();
               errorAlert.innerText = errData.message || "Ошибка входа.";

@@ -9,9 +9,6 @@
         Invalid_PasswordNotEquals,
         Invalid_Email,
         Invalid_SomeFieldsEmpty,
-        Error
-
-
-
+        Error 
     }
 }

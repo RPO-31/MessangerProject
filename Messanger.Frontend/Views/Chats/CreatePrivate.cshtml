@@ -1,0 +1,103 @@
+﻿@using Messanger.Frontend.Enums
+@model SearchUserRequest
+@{
+    ViewData["Title"] = "Создание приватного чата";
+}
+
+
+
+<div class="text-center"> 
+    <form asp-controller="Users" asp-action="Index" method="post">
+        <input type="hidden" name="ChatType" value="1"/>
+        <button type="submit" class="btn btn-primary">Выбрать пользователя</button>
+        
+    </form>
+	<p id="error-alert" style="color:red;"></p>
+    <button id="CreatingPrivateChat">Создать приватный чат</button> 
+</div>
+
+
+
+
+<script>
+        const ChatTypeEnum = {
+        Private: @((int)EChatType.Private),
+        Group: @((int)EChatType.Group),
+        None: @((int)EChatType.None)
+        };
+        async function CreateChat(e){
+            e.preventDefault();
+            document.getElementById('CreatingPrivateChat').addEventListener('click', function() {
+                CreatePrivateChat(e);
+            });
+        }
+
+        async function CreatePrivateChat(e){
+
+            e.preventDefault();
+            let errorAlert = document.getElementById("error-alert");
+            errorAlert.style.display = "none";
+            
+            let userid = @(Model.UsersId?.FirstOrDefault() ?? 0);
+            alert(userid);
+            alert("W");
+            if(userid > 0){
+                const data =
+                {
+                    userId: userid
+                };
+                try {
+                    const res = await fetch(`https://localhost:5030/chats/private`, {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                    if (res.status === 201 || res.status === 200) {
+                   
+                        const data = await res.json();
+                        let strArr = data.message.split(" ");
+                        if (strArr[0] === "chatExist") {
+                            window.location.href = `/Chats/Details/${strArr[1]}`;
+                        } 
+                        else {
+                            window.location.href = "/Chats/Index";
+                        }
+                    } 
+                    else {
+                        const errData = await res.json();
+                        errorAlert.innerText = errData.message || "Ошибка создания комнаты.";
+                    errorAlert.style.display = "block";
+                    }
+                } catch (error) {
+                    errorAlert.innerText = "Не удалось связаться с сервером.";
+                    errorAlert.style.display = "block";
+                    console.error("Ошибка:", error);
+                }
+            }
+            
+                
+        }
+        async function AuthMe()
+        {
+            const res = await fetch("https://localhost:5030/auth/me", {
+                method: "GET",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (res.status === 201 || res.status === 200) 
+            { 
+            }
+            else if(res.status === 401) {
+                    window.location.href = "/Account/Login";
+            }
+            else
+                window.location.href = "/Account/Login";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            AuthMe();
+            document.getElementById('CreatingPrivateChat').addEventListener('click', CreatePrivateChat);
+    
+        }); 
+</script>

@@ -10,15 +10,16 @@ namespace Messanger.DataAccess.Models
     {
         public int Id { get; set; }
 
-        public Chat MChat { get; set; }
-         
-        public int AuthorId { get; set; }
+        public int MainChatId { get; set; }
+        public Chat? MainChat { get; set; } = null;
+
+        public User? Author { get; set; } = null;
 
         public string Text { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
+        public bool IsDeleted { get; set; } = false; 
 
     }
 }

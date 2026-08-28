@@ -1,7 +1,7 @@
 ﻿@model List<ChatViewModel>
 @{
 }
-
+<div id = "error-alert"></div>
 <div class="container text-center">
     <div class="row align-items-start">
         <div class="row">
@@ -11,34 +11,79 @@
 
 
         <div class="row">
-            One of three columns
+            <ul id="chatsList"></ul>
         </div> 
     </div>
 </div>
 
+
 <script>
-    async function GetChats(e)
-    {
-       e.preventDefault();
- 
+     
+
+    async function GetChats()
+        {
+            let errorAlert = document.getElementById("error-alert");
+            errorAlert.style.display = "none";
             try {
-      const res = await fetch("https://localhost:5030/chats", {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" } 
-      });
-      foreach(var chat in res)
-        if (res.status === 201 || res.status === 200) { 
-
-        } else { 
-
+                    const res = await fetch("https://localhost:5030/chats", {
+                    method: "GET",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" } 
+            });
+                alert("успешнор пройдена верификация2");
+                if (res.status === 201 || res.status === 200) { 
+                    data = await res.json();
+                    let htmlContent = data.map(chat => `
+                        <a href="/Chats/Details/${chat.id}" class="btn btn-primary">
+                            <li>
+                                <h1>${chat.name}</h1>
+                                <h3>тип чата -  ${chat.chatType}</h3>
+                                <h4>Был Создан -  ${(new Date(chat.createdAt).toLocaleString())}</h4>
+                                <h4>Последнее сообщение -  ${chat.lastMessage}</h4>
+                            </li>
+                        </a>
+                    `).join('');
+                    document.getElementById('chatsList').innerHTML = htmlContent;
+                    document.querySelectorAll('.GetInChat').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                             (this);
+                        });
+                    }); 
+                } 
+                else 
+                {
+                    let htmlContent = data.map(chat => `
+                        <li>
+                            <h1>Данных Нет!</h1>
+                        </li>
+                        `).join('');
+                    document.getElementById('chatsList').innerHTML = htmlContent;
+                }
+            } 
+            catch (error) 
+            {
+                errorAlert.innerText = "Не удалось связаться с серверомwtf.";
+                errorAlert.style.display = "block";
+                console.error("Ошибка:", error); 
+            } 
         }
-    } 
-    catch (error) 
-    {
-        errorAlert.innerText = "Не удалось связаться с сервером.";
-        errorAlert.style.display = "block";
-        console.error("Ошибка:", error); 
-    } 
-}
+
+        async function AuthMe()
+        {
+
+            const res = await fetch("https://localhost:5030/auth/me", {
+                method: "GET",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" }
+            });
+            if (res.status === 201 || res.status === 200) 
+            { 
+                await GetChats();
+            }
+            if(res.status === 401) {
+                    window.location.href = "/Account/Login";
+            }
+        }
+
+    document.addEventListener("DOMContentLoaded", AuthMe);
 </script>

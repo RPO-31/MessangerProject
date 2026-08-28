@@ -1,4 +1,5 @@
-﻿using Messanger.Api.ViewModels;
+﻿using Messanger.Api.Enums;
+using Messanger.Api.ViewModels;
 
 namespace Messanger.Api.Services.Interfaces
 {
