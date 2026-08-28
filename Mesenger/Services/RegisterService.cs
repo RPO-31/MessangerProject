@@ -3,6 +3,7 @@ using Messanger.Api.Enums;
 using Messanger.Api.Services.Interfaces;
 using Messanger.DataAccess.Models;
 using Messenger.Api.Repository.Interfaces;
+using Messenger.Api.Repository.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 
@@ -48,7 +49,7 @@ namespace Messanger.Api.Services
             try
             {
                 var passwordHasher = new PasswordHasher<User>();
-                User NewUser = new User() { Name = RegRequest.Name, OutputName = RegRequest.OutputName, Email = RegRequest.Email, Chats = new List<Chat>(), RegDate = DateTime.Now };
+                User NewUser = new User() { Id = DebugUserRepository.Users2.Count(), Name = RegRequest.Name, OutputName = RegRequest.OutputName, Email = RegRequest.Email, Chats = new List<Chat>(), RegDate = DateTime.Now };
 
                 NewUser.Password = passwordHasher.HashPassword(NewUser, RegRequest.Password);
 

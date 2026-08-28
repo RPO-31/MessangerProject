@@ -29,8 +29,7 @@
                     method: "GET",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" } 
-            });
-                alert("успешнор пройдена верификация2");
+            }); 
                 if (res.status === 201 || res.status === 200) { 
                     data = await res.json();
                     let htmlContent = data.map(chat => `

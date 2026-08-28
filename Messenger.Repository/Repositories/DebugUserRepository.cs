@@ -17,7 +17,7 @@ namespace Messenger.Api.Repository.Repositories
                 //new User{Id = 2, Email = "Alfedov@gmail.com", Name = "Альфедов", OutputName = "Альфедов yt", Password = "Z9y$KlmN", RegDate = DateTime.Now},
                 new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now, Chats = new List<Chat>()
                     {
-                        new Chat(){ Id = 0,ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak"}, new Message(){Text = "дважды"} }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
+                        new Chat(){ Id = 0,ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak"}, new Message(){Text = "дважды", Author = new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
                         new Chat(){ Id = 1, Name = "лол чат для четверых(4)",  ChatType = EChatType.Group, CreatedAt = DateTime.Now, Messages = new List<Message>(){ new Message(){Text = "что там по peak2"}, new Message(){Text = "трижды"}  }, Users = new(){new User{Id = 0, Email = "JustS@gmail.com", Name = "Джаст", OutputName = "Джаст orig", Password = "Z9y$KlmN", RegDate = DateTime.Now } } },
                     }
                 },

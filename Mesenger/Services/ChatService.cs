@@ -6,6 +6,7 @@ using Messanger.Api.ViewModels;
 using Messanger.DataAccess.Enums;
 using Messanger.DataAccess.Models;
 using Messenger.Api.Repository.Interfaces;
+using Messenger.Api.Repository.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Mesenger.Api.Services
@@ -53,7 +54,7 @@ namespace Mesenger.Api.Services
 
                 usersIdToChat = usersToChat.Select(u => u.Id).ToList();
 
-                var chat = new Chat() { ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Users = usersToChat, UsersId = usersIdToChat };
+                var chat = new Chat() { Id = DebugChatRepository.Chats2.Count() , ChatType = EChatType.Personal, CreatedAt = DateTime.Now, Users = usersToChat, UsersId = usersIdToChat };
 
                 MainUser.Chats.Add(chat);
                 OtherUser.Chats.Add(chat);
@@ -229,7 +230,7 @@ namespace Mesenger.Api.Services
             var chat = await _ChatRepository.GetByIdAsync(Id);
             var user = await _UserRepository.GetByIdAsync(MainId);
 
-            if (chat.Users.Contains(user))
+            if (!chat.Users.Any(u => u.Id == user.Id))
             {
                 return (new Result(EResultCodes.NotFound, "Вы не состоите в данной беседе!"), null!);
             }
@@ -269,6 +270,7 @@ namespace Mesenger.Api.Services
 
             chat.Messages.Add(new Message()
             {
+                Id = chat.Messages.Count,
                 Text = SendMsgRequest.Text,
                 CreatedAt = DateTime.Now,
                 Author = user,

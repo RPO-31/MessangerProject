@@ -38,9 +38,7 @@
             let errorAlert = document.getElementById("error-alert");
             errorAlert.style.display = "none";
             
-            let userid = @(Model.UsersId?.FirstOrDefault() ?? 0);
-            alert(userid);
-            alert("W");
+            let userid = @(Model.UsersId?.FirstOrDefault() ?? 0); 
             if(userid > 0){
                 const data =
                 {

@@ -7,6 +7,7 @@ using Messenger.Api.Repository.Interfaces;
 using Messenger.Api.Repository.Repositories; 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>

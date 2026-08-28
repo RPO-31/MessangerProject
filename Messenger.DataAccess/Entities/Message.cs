@@ -11,9 +11,9 @@ namespace Messanger.DataAccess.Models
         public int Id { get; set; }
 
         public int MainChatId { get; set; }
-        public Chat? MainChat { get; set; } = null;
+        public Chat? MainChat { get; set; } = new();
 
-        public User? Author { get; set; } = null;
+        public User? Author { get; set; } = new();
 
         public string Text { get; set; }
 

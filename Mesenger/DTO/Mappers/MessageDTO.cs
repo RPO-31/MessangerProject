@@ -11,7 +11,7 @@ namespace Mesenger.Api.DTO.Transformers
             {
                 Text = message.Text,
                 CreatedAt = message.CreatedAt,
-                AuthorName = message.Author.OutputName
+                AuthorName = (message.Author == null) ? message.Author.OutputName : ""
             };
         }
         public static List<MessageViewModel> MessagesToViewModel(List<Message> messages)
